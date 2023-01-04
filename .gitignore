@@ -11,6 +11,13 @@
 # production
 /build
 
+# front-end
+/css
+/assets
+/.vscode
+index.html
+script.js
+
 # misc
 .DS_Store
 .env.local
