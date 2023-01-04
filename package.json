@@ -1,7 +1,6 @@
 {
   "name": "tweteroo_back",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -20,5 +19,6 @@
   "homepage": "https://github.com/mkvasconcelos/tweteroo_back#readme",
   "dependencies": {
     "express": "^4.18.2"
-  }
+  },
+  "description": ""
 }
