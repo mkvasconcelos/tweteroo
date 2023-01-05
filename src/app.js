@@ -41,13 +41,29 @@ app.get("/tweets", (_, res) => {
   let array = [];
   let stop = 0;
   if (tweets.length > 10) {
-    stop = tweets.length - 11;
+    stop = tweets.length - 10;
   }
-  for (let i = tweets.length - 1; i > stop; i--) {
+  for (let i = tweets.length - 1; i >= stop; i--) {
     array.push({
       username: tweets[i].username,
       avatar: users.filter((u) => u.username === tweets[i].username)[0].avatar,
       tweet: tweets[i].tweet,
+    });
+  }
+  res.status(200).send(array);
+});
+
+app.get("/tweets/:username", (req, res) => {
+  let array = [];
+  const username = req.params.username;
+  let tweetsUser = tweets.filter((t) => t.username === username);
+  const avatar = users.filter((u) => u.username === tweetsUser[0].username)[0]
+    .avatar;
+  for (let i = tweetsUser.length - 1; i >= 0; i--) {
+    array.push({
+      username: tweetsUser[i].username,
+      avatar: avatar,
+      tweet: tweetsUser[i].tweet,
     });
   }
   res.status(200).send(array);
@@ -61,7 +77,7 @@ app.post("/tweets", (req, res) => {
     !Object.keys(tweet).includes("tweet")
   ) {
     return res.status(400).send("Bad request, the payload is incorrect!");
-  } else if (!Object.values(tweet).includes("")) {
+  } else if (Object.values(tweet).includes("")) {
     return res.status(400).send("All fields are mandatory!");
   }
   if (users.filter((u) => u.username === req.body.username).length === 0)
