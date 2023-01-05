@@ -38,11 +38,12 @@ app.post("/sign-up", (req, res) => {
 });
 
 app.get("/tweets", (req, res) => {
+  // I could create a varibale to get the size of the page instead of set to 10
   let array = [];
-  let page = req.query.page ? parseInt(req.query.page) : 0;
-  let max = tweets.length - page * 10;
-  let min =
-    tweets.length - (page + 1) * 10 >= 0 ? tweets.length - (page + 1) * 10 : 0;
+  let page = req.query.page ? parseInt(req.query.page) : 1;
+  if (!page >= 1) return res.status(400).send("Please enter a valid page!");
+  let max = tweets.length - (page - 1) * 10;
+  let min = tweets.length - page * 10 >= 0 ? tweets.length - page * 10 : 0;
   const tweetsSlice = tweets.slice(min, max);
   for (let i = tweetsSlice.length - 1; i >= 0; i--) {
     array.push({
