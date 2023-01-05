@@ -33,7 +33,7 @@ app.post("/sign-up", (req, res) => {
       return res.status(400).send("URL is incorrect! It's not an image.");
   }
   users.push(user);
-  res.status(200).send("OK");
+  res.status(201).send("OK");
   console.log(users);
 });
 
@@ -67,7 +67,7 @@ app.post("/tweets", (req, res) => {
   if (users.filter((u) => u.username === req.body.username).length === 0)
     return res.status(401).send("UNAUTHORIZED");
   tweets.push(tweet);
-  res.status(200).send("OK");
+  res.status(201).send("OK");
   console.log(tweets);
 });
 
