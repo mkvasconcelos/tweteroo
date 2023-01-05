@@ -43,47 +43,45 @@ app.post("/sign-up", (req, res) => {
   console.log(users);
 });
 
-app.get("/tweets", (req, res) => {
+app.get("/tweets/:USERNAME?", (req, res) => {
   // I could create a varibale to get the size of the page instead of set to 10
+  const username = req.params.USERNAME;
   let array = [];
-  let page = Number(req.query.page);
-  if (req.query.page) {
-    if (Number.isNaN(page) || !Number.isInteger(page) || page < 1) {
-      return res.status(400).send("Please enter a valid page!");
+  if (!username) {
+    let page = Number(req.query.page);
+    if (req.query.page) {
+      if (Number.isNaN(page) || !Number.isInteger(page) || page < 1) {
+        return res.status(400).send("Please enter a valid page!");
+      } else {
+        page = Number(page);
+      }
     } else {
-      page = Number(page);
+      page = 1;
+    }
+    let max = tweets.length - (page - 1) * 10;
+    let min = tweets.length - page * 10 >= 0 ? tweets.length - page * 10 : 0;
+    const tweetsSlice = tweets.slice(min, max);
+    for (let i = tweetsSlice.length - 1; i >= 0; i--) {
+      array.push({
+        username: tweetsSlice[i].username,
+        avatar: users.filter((u) => u.username === tweetsSlice[i].username)[0]
+          .avatar,
+        tweet: tweetsSlice[i].tweet,
+      });
     }
   } else {
-    page = 1;
-  }
-  let max = tweets.length - (page - 1) * 10;
-  let min = tweets.length - page * 10 >= 0 ? tweets.length - page * 10 : 0;
-  const tweetsSlice = tweets.slice(min, max);
-  for (let i = tweetsSlice.length - 1; i >= 0; i--) {
-    array.push({
-      username: tweetsSlice[i].username,
-      avatar: users.filter((u) => u.username === tweetsSlice[i].username)[0]
-        .avatar,
-      tweet: tweetsSlice[i].tweet,
-    });
-  }
-  res.status(200).send(array);
-});
-
-app.get("/tweets/:USERNAME", (req, res) => {
-  let array = [];
-  const username = req.params.USERNAME;
-  let tweetsUser = tweets.filter((t) => t.username === username);
-  if (tweetsUser.length === 0)
-    return res.status(400).send("User doesn't have any tweet yet.");
-  const avatar = users.filter((u) => u.username === tweetsUser[0].username)[0]
-    .avatar;
-  for (let i = tweetsUser.length - 1; i >= 0; i--) {
-    array.push({
-      username: tweetsUser[i].username,
-      avatar: avatar,
-      tweet: tweetsUser[i].tweet,
-    });
+    let tweetsUser = tweets.filter((t) => t.username === username);
+    if (tweetsUser.length === 0)
+      return res.status(400).send("User doesn't have any tweet yet.");
+    const avatar = users.filter((u) => u.username === tweetsUser[0].username)[0]
+      .avatar;
+    for (let i = tweetsUser.length - 1; i >= 0; i--) {
+      array.push({
+        username: tweetsUser[i].username,
+        avatar: avatar,
+        tweet: tweetsUser[i].tweet,
+      });
+    }
   }
   res.status(200).send(array);
 });
