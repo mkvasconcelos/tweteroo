@@ -37,17 +37,19 @@ app.post("/sign-up", (req, res) => {
   console.log(users);
 });
 
-app.get("/tweets", (_, res) => {
+app.get("/tweets", (req, res) => {
   let array = [];
-  let stop = 0;
-  if (tweets.length > 10) {
-    stop = tweets.length - 10;
-  }
-  for (let i = tweets.length - 1; i >= stop; i--) {
+  let page = req.query.page ? parseInt(req.query.page) : 0;
+  let max = tweets.length - page * 10;
+  let min =
+    tweets.length - (page + 1) * 10 >= 0 ? tweets.length - (page + 1) * 10 : 0;
+  const tweetsSlice = tweets.slice(min, max);
+  for (let i = tweetsSlice.length - 1; i >= 0; i--) {
     array.push({
-      username: tweets[i].username,
-      avatar: users.filter((u) => u.username === tweets[i].username)[0].avatar,
-      tweet: tweets[i].tweet,
+      username: tweetsSlice[i].username,
+      avatar: users.filter((u) => u.username === tweetsSlice[i].username)[0]
+        .avatar,
+      tweet: tweetsSlice[i].tweet,
     });
   }
   res.status(200).send(array);
