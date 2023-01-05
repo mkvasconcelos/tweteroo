@@ -69,20 +69,38 @@ app.get("/tweets/:username", (req, res) => {
   res.status(200).send(array);
 });
 
+// app.post("/tweets", (req, res) => {
+//   const tweet = req.body;
+//   if (
+//     Object.keys(tweet).length !== 2 ||
+//     !Object.keys(tweet).includes("username") ||
+//     !Object.keys(tweet).includes("tweet")
+//   ) {
+//     return res.status(400).send("Bad request, the payload is incorrect!");
+//   } else if (Object.values(tweet).includes("")) {
+//     return res.status(400).send("All fields are mandatory!");
+//   }
+//   if (users.filter((u) => u.username === req.body.username).length === 0)
+//     return res.status(401).send("UNAUTHORIZED");
+//   tweets.push(tweet);
+//   res.status(201).send("OK");
+//   console.log(tweets);
+// });
+
 app.post("/tweets", (req, res) => {
+  const username = req.header("user");
   const tweet = req.body;
   if (
-    Object.keys(tweet).length !== 2 ||
-    !Object.keys(tweet).includes("username") ||
+    Object.keys(tweet).length !== 1 ||
     !Object.keys(tweet).includes("tweet")
   ) {
     return res.status(400).send("Bad request, the payload is incorrect!");
-  } else if (Object.values(tweet).includes("")) {
+  } else if (Object.values(tweet).includes("") || username === "") {
     return res.status(400).send("All fields are mandatory!");
   }
-  if (users.filter((u) => u.username === req.body.username).length === 0)
+  if (users.filter((u) => u.username === username).length === 0)
     return res.status(401).send("UNAUTHORIZED");
-  tweets.push(tweet);
+  tweets.push({ username, tweet: tweet.tweet });
   res.status(201).send("OK");
   console.log(tweets);
 });
