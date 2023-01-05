@@ -10,6 +10,14 @@ app.use(express.urlencoded({ extended: true }));
 let users = [];
 let tweets = [];
 
+function checkImage(url) {
+  if (url.match(/^http.*\.(jpeg|jpg|gif|png)$/) !== null) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 app.post("/sign-up", (req, res) => {
   const user = req.body;
   if (
@@ -18,6 +26,11 @@ app.post("/sign-up", (req, res) => {
     !Object.keys(user).includes("avatar")
   ) {
     return res.status(400).send("Bad request, the payload is incorrect!");
+  } else if (Object.values(user).includes("")) {
+    return res.status(400).send("All fields are mandatory!");
+  } else {
+    if (!checkImage(user.avatar))
+      return res.status(400).send("URL is incorrect! It's not an image.");
   }
   users.push(user);
   res.status(200).send("OK");
@@ -48,6 +61,8 @@ app.post("/tweets", (req, res) => {
     !Object.keys(tweet).includes("tweet")
   ) {
     return res.status(400).send("Bad request, the payload is incorrect!");
+  } else if (!Object.values(tweet).includes("")) {
+    return res.status(400).send("All fields are mandatory!");
   }
   if (users.filter((u) => u.username === req.body.username).length === 0)
     return res.status(401).send("UNAUTHORIZED");
