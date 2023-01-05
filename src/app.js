@@ -9,6 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 
 let users = [];
 let tweets = [];
+const errorMessage = "Bad request, the payload is incorrect!";
 
 function checkImage(url) {
   if (url.match(/^http.*\.(jpeg|jpg|gif|png)$/) !== null) {
@@ -24,13 +25,13 @@ app.post("/sign-up", (req, res) => {
     typeof req.body.username !== "string" ||
     typeof req.body.avatar !== "string"
   )
-    return res.status(400).send("Bad request, the payload is incorrect!");
+    return res.status(400).send(errorMessage);
   if (
     Object.keys(user).length !== 2 ||
     !Object.keys(user).includes("username") ||
     !Object.keys(user).includes("avatar")
   ) {
-    return res.status(400).send("Bad request, the payload is incorrect!");
+    return res.status(400).send(errorMessage);
   } else if (Object.values(user).includes("")) {
     return res.status(400).send("All fields are mandatory!");
   } else {
@@ -69,12 +70,12 @@ app.get("/tweets", (req, res) => {
   res.status(200).send(array);
 });
 
-app.get("/tweets/:username", (req, res) => {
+app.get("/tweets/:USERNAME", (req, res) => {
   let array = [];
-  const username = req.params.username;
+  const username = req.params.USERNAME;
   let tweetsUser = tweets.filter((t) => t.username === username);
-  // if (tweetsUser.length === 0)
-  //   return res.status(400).send("User doesn't have any tweet yet.");
+  if (tweetsUser.length === 0)
+    return res.status(400).send("User doesn't have any tweet yet.");
   const avatar = users.filter((u) => u.username === tweetsUser[0].username)[0]
     .avatar;
   for (let i = tweetsUser.length - 1; i >= 0; i--) {
@@ -91,12 +92,12 @@ app.post("/tweets", (req, res) => {
   const username = req.header("user");
   const tweet = req.body;
   if (typeof tweet.tweet !== "string")
-    return res.status(400).send("Bad request, the payload is incorrect!");
+    return res.status(400).send(errorMessage);
   if (
     Object.keys(tweet).length !== 1 ||
     !Object.keys(tweet).includes("tweet")
   ) {
-    return res.status(400).send("Bad request, the payload is incorrect!");
+    return res.status(400).send(errorMessage);
   } else if (Object.values(tweet).includes("") || username === "") {
     return res.status(400).send("All fields are mandatory!");
   }
