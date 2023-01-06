@@ -38,6 +38,7 @@ app.post("/sign-up", (req, res) => {
     if (!checkImage(user.avatar))
       return res.status(400).send("URL is incorrect! It's not an image.");
   }
+  user.id = users.length + 1;
   users.push(user);
   res.status(201).send("OK");
   console.log(users);
@@ -46,30 +47,9 @@ app.post("/sign-up", (req, res) => {
 app.get("/tweets/:USERNAME?", (req, res) => {
   // I could create a varibale to get the size of the page instead of set to 10
   const username = req.params.USERNAME;
+  let page = Number(req.query.page);
   let array = [];
-  if (!username) {
-    let page = Number(req.query.page);
-    if (req.query.page) {
-      if (Number.isNaN(page) || !Number.isInteger(page) || page < 1) {
-        return res.status(400).send("Please enter a valid page!");
-      } else {
-        page = Number(page);
-      }
-    } else {
-      page = 1;
-    }
-    let max = tweets.length - (page - 1) * 10;
-    let min = tweets.length - page * 10 >= 0 ? tweets.length - page * 10 : 0;
-    const tweetsSlice = tweets.slice(min, max);
-    for (let i = tweetsSlice.length - 1; i >= 0; i--) {
-      array.push({
-        username: tweetsSlice[i].username,
-        avatar: users.filter((u) => u.username === tweetsSlice[i].username)[0]
-          .avatar,
-        tweet: tweetsSlice[i].tweet,
-      });
-    }
-  } else {
+  if (username) {
     let tweetsUser = tweets.filter((t) => t.username === username);
     if (tweetsUser.length === 0)
       return res.status(400).send("User doesn't have any tweet yet.");
@@ -82,8 +62,25 @@ app.get("/tweets/:USERNAME?", (req, res) => {
         tweet: tweetsUser[i].tweet,
       });
     }
+    return res.status(200).send(array);
   }
-  res.status(200).send(array);
+  if (!req.query.page) {
+    page = 1;
+  } else if (Number.isNaN(page) || !Number.isInteger(page) || page < 1) {
+    return res.status(400).send("Please enter a valid page!");
+  }
+  let max = tweets.length - (page - 1) * 10;
+  let min = tweets.length - page * 10 >= 0 ? tweets.length - page * 10 : 0;
+  const tweetsSlice = tweets.slice(min, max);
+  for (let i = tweetsSlice.length - 1; i >= 0; i--) {
+    array.push({
+      username: tweetsSlice[i].username,
+      avatar: users.filter((u) => u.username === tweetsSlice[i].username)[0]
+        .avatar,
+      tweet: tweetsSlice[i].tweet,
+    });
+  }
+  return res.status(200).send(array);
 });
 
 app.post("/tweets", (req, res) => {
@@ -101,7 +98,7 @@ app.post("/tweets", (req, res) => {
   }
   if (users.filter((u) => u.username === username).length === 0)
     return res.status(401).send("UNAUTHORIZED");
-  tweets.push({ username, tweet: tweet.tweet });
+  tweets.push({ username, tweet: tweet.tweet, id: tweets.length + 1 });
   res.status(201).send("OK");
   console.log(tweets);
 });
