@@ -51,10 +51,9 @@ app.get("/tweets/:USERNAME?", (req, res) => {
   let array = [];
   if (username) {
     let tweetsUser = tweets.filter((t) => t.username === username);
-    if (tweetsUser.length === 0)
-      return res.status(400).send("User doesn't have any tweet yet.");
-    const avatar = users.filter((u) => u.username === tweetsUser[0].username)[0]
-      .avatar;
+    const avatar = users.find(
+      (u) => u.username === tweetsUser[0].username
+    ).avatar;
     for (let i = tweetsUser.length - 1; i >= 0; i--) {
       array.push({
         username: tweetsUser[i].username,
@@ -75,8 +74,7 @@ app.get("/tweets/:USERNAME?", (req, res) => {
   for (let i = tweetsSlice.length - 1; i >= 0; i--) {
     array.push({
       username: tweetsSlice[i].username,
-      avatar: users.filter((u) => u.username === tweetsSlice[i].username)[0]
-        .avatar,
+      avatar: users.find((u) => u.username === tweetsSlice[i].username).avatar,
       tweet: tweetsSlice[i].tweet,
     });
   }
@@ -96,7 +94,7 @@ app.post("/tweets", (req, res) => {
   } else if (Object.values(tweet).includes("") || username === "") {
     return res.status(400).send("All fields are mandatory!");
   }
-  if (users.filter((u) => u.username === username).length === 0)
+  if (!users.find((u) => u.username === username))
     return res.status(401).send("UNAUTHORIZED");
   tweets.push({ username, tweet: tweet.tweet, id: tweets.length + 1 });
   res.status(201).send("OK");
