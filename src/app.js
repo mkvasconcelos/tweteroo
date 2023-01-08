@@ -51,6 +51,8 @@ app.get("/tweets/:USERNAME?", (req, res) => {
   let array = [];
   if (username) {
     let tweetsUser = tweets.filter((t) => t.username === username);
+    if (tweetsUser.length === 0)
+      return res.status(400).send("Please enter a valid username!");
     const avatar = users.find(
       (u) => u.username === tweetsUser[0].username
     ).avatar;
