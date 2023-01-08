@@ -7,16 +7,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-let users = [];
-let tweets = [];
+const users = [];
+const tweets = [];
 const errorMessage = "Bad request, the payload is incorrect!";
 
 function checkImage(url) {
-  if (url.match(/^http.*\.(jpeg|jpg|gif|png)$/) !== null) {
-    return true;
-  } else {
-    return false;
-  }
+  return url.match(/^http.*\.(jpeg|jpg|gif|png)$/) !== null;
 }
 
 app.post("/sign-up", (req, res) => {
@@ -40,17 +36,17 @@ app.post("/sign-up", (req, res) => {
   }
   user.id = users.length + 1;
   users.push(user);
-  res.status(201).send("OK");
   console.log(users);
+  return res.status(201).send("OK");
 });
 
 app.get("/tweets/:USERNAME?", (req, res) => {
   // I could create a varibale to get the size of the page instead of set to 10
   const username = req.params.USERNAME;
   let page = Number(req.query.page);
-  let array = [];
+  const array = [];
   if (username) {
-    let tweetsUser = tweets.filter((t) => t.username === username);
+    const tweetsUser = tweets.filter((t) => t.username === username);
     if (tweetsUser.length === 0)
       return res.status(400).send("Please enter a valid username!");
     const avatar = users.find(
@@ -70,8 +66,8 @@ app.get("/tweets/:USERNAME?", (req, res) => {
   } else if (Number.isNaN(page) || !Number.isInteger(page) || page < 1) {
     return res.status(400).send("Please enter a valid page!");
   }
-  let max = tweets.length - (page - 1) * 10;
-  let min = tweets.length - page * 10 >= 0 ? tweets.length - page * 10 : 0;
+  const max = tweets.length - (page - 1) * 10;
+  const min = tweets.length - page * 10 >= 0 ? tweets.length - page * 10 : 0;
   const tweetsSlice = tweets.slice(min, max);
   for (let i = tweetsSlice.length - 1; i >= 0; i--) {
     array.push({
@@ -99,8 +95,8 @@ app.post("/tweets", (req, res) => {
   if (!users.find((u) => u.username === username))
     return res.status(401).send("UNAUTHORIZED");
   tweets.push({ username, tweet: tweet.tweet, id: tweets.length + 1 });
-  res.status(201).send("OK");
   console.log(tweets);
+  return res.status(201).send("OK");
 });
 
 app.listen(PORT, () => {
