@@ -101,3 +101,6 @@ app.post("/tweets", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// Export the Express API
+module.exports = app;
