@@ -14,7 +14,7 @@
 
 ### Features
 - [x] Express<br>
-- [x] Method GET and POST<br>
+- [x] Methods GET and POST<br>
 - [x] GET with pagination<br>
 - [x] Manipulate info from the params, body and header<br>
 
